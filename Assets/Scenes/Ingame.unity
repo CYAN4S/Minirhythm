@@ -589,7 +589,6 @@ MonoBehaviour:
   modeLine: 0
   noteList: []
   bpmList: []
-  cruelty: 1
 --- !u!4 &375299450
 Transform:
   m_ObjectHideFlags: 0
@@ -647,10 +646,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a5be39bb38c5714a9c53465123897b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputManager: {fileID: 909680473}
-  sheetManager: {fileID: 375299449}
-  audioManager: {fileID: 1522615987}
-  uIController: {fileID: 583365586}
+  inputM: {fileID: 0}
+  sheetM: {fileID: 0}
+  audioM: {fileID: 0}
+  uICon: {fileID: 0}
   notePrefab: {fileID: 5309676264282566337, guid: 38c52f6e03861274a8afb02e3532dabb,
     type: 3}
   notesParent: {fileID: 1137658837}

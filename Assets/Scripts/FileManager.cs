@@ -11,6 +11,10 @@ public class FileManager : MonoBehaviour
 
     DirectoryInfo SongsDir;
 
+    // TESTING
+    public SerializableSheet te;
+    public SerializableInfo st;
+
     private void Start()
     {
         Debug.Log(SongsDirString);
@@ -43,6 +47,9 @@ public class FileManager : MonoBehaviour
             Debug.LogError("Error Occured. : " + e);
             throw;
         }
+
+        Debug.Log(JsonUtility.ToJson(te));
+        Debug.Log(JsonUtility.ToJson(st));
     }
 
     private void Update()

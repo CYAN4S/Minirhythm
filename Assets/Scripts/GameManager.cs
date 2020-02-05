@@ -6,10 +6,10 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     #region UNITYEDITOR SETUPS
-    public InputManager inputManager;
-    public SheetManager sheetManager;
-    public AudioManager audioManager;
-    public UIController uIController;
+    public InputManager inputM;
+    public SheetManager sheetM;
+    public AudioManager audioM;
+    public UIController uICon;
     public GameObject notePrefab, notesParent;
     #endregion
 
@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
     public const float WAITTIME = 5f;
     public const double WAITTIMING = 2;
     private static readonly double[] judgeCruel = { 0.05, 0.1, 0.3, 0.5 };
-    private static readonly int[] scoreRatio = { 100, 80, 50, 10 };
+    private static readonly int[] scoreRate = { 100, 80, 50, 10 };
     private static readonly float[] healthRecovers = { 0.05f, 0.02f, 0.01f, -0.05f, -0.1f };
     private float[][] xPoses =
     {
@@ -55,7 +55,7 @@ public class GameManager : MonoBehaviour
     {
         SetKeyCodes();
         SetJudgeTimeDif();
-        uIController.SetPressingEffects(sheetManager.modeLine);
+        uICon.SetPressingEffects(sheetM.modeLine);
         ClassifyNote();
         MoveNotes();
         ApplyHealth();
@@ -77,18 +77,18 @@ public class GameManager : MonoBehaviour
 
     private void SetKeyCodes()
     {
-        switch (sheetManager.modeLine)
+        switch (sheetM.modeLine)
         {
-            case 4: KeyCodes = inputManager.KeyCodes4K; break;
-            case 5: KeyCodes = inputManager.KeyCodes5K; break;
-            case 6: KeyCodes = inputManager.KeyCodes6K; break;
-            case 8: KeyCodes = inputManager.KeyCodes8K; break;
+            case 4: KeyCodes = inputM.KeyCodes4K; break;
+            case 5: KeyCodes = inputM.KeyCodes5K; break;
+            case 6: KeyCodes = inputM.KeyCodes6K; break;
+            case 8: KeyCodes = inputM.KeyCodes8K; break;
         }
 
         isInLongNote = new List<bool>();
         startJudge = new List<Judgement>();
         activeLongNote = new List<Tuple<GameObject, NoteComponent>>();
-        for (int i = 0; i < sheetManager.modeLine; i++)
+        for (int i = 0; i < sheetM.modeLine; i++)
         {
             isInLongNote.Add(false);
             startJudge.Add(Judgement.NONE);
@@ -102,25 +102,23 @@ public class GameManager : MonoBehaviour
     {
         judgeTimeDif = new List<double>();
         for (int i = 0; i < 4; i++)
-            judgeTimeDif.Add(judgeCruel[i] * sheetManager.cruelty);
+            judgeTimeDif.Add(judgeCruel[i]);
     }
 
 
     private void ClassifyNote()
     {
         notesByLines = new List<Queue<Tuple<GameObject, NoteComponent>>>();
-        for (int i = 0; i < sheetManager.modeLine; i++)
-        {
+        for (int i = 0; i < sheetM.modeLine; i++)
             notesByLines.Add(new Queue<Tuple<GameObject, NoteComponent>>());
-        }
 
-        foreach (var noteData in sheetManager.noteList)
+        foreach (var noteData in sheetM.noteList)
         {
             var noteObject = MakeNoteObject(noteData);
             notesByLines[noteData.line].Enqueue(noteObject);
         }
 
-        totalNote = sheetManager.noteList.Count + sheetManager.noteList.Count;
+        totalNote = sheetM.noteList.Count + sheetM.noteList.Count;
     }
 
 
@@ -134,7 +132,7 @@ public class GameManager : MonoBehaviour
             result.GetComponent<RectTransform>().sizeDelta += new Vector2(0, 1000);
         }
         noteComponent.noteData = noteData;
-        noteComponent.time = TimeCalc.GetTime(noteData.timing + WAITTIMING, sheetManager) + WAITTIME;
+        noteComponent.time = TimeCalc.GetTime(noteData.timing + WAITTIMING, sheetM) + WAITTIME;
         return Tuple.Create(result, noteComponent);
     }
 
@@ -155,7 +153,7 @@ public class GameManager : MonoBehaviour
         note.transform.localPosition = new Vector3
         (
             getNoteXPos(noteData.line),
-            getNoteYPos(noteData.timing - TimeCalc.GetTiming(Time.time - WAITTIME, sheetManager) + WAITTIMING),
+            getNoteYPos(noteData.timing - TimeCalc.GetTiming(Time.time - WAITTIME, sheetM) + WAITTIMING),
             0
         );
     }
@@ -163,7 +161,7 @@ public class GameManager : MonoBehaviour
 
     private void JudgePlayInput()
     {
-        for (int i = 0; i < sheetManager.modeLine; i++)
+        for (int i = 0; i < sheetM.modeLine; i++)
         {
             if (notesByLines[i].Count == 0)
                 continue;
@@ -176,7 +174,7 @@ public class GameManager : MonoBehaviour
                 var noteData = noteComponent.noteData;
                 float time = noteComponent.time;
 
-                audioManager.PlayAudioClip(noteData.audioCode);
+                audioM.PlayAudioClip(noteData.audioCode);
 
                 if (noteData is LongNoteData && isInLongNote[i] == false)
                 {
@@ -191,35 +189,35 @@ public class GameManager : MonoBehaviour
                 {
                     case Judgement.PRECISE:
                         IncreaseCombo();
-                        IncreaseScore(scoreRatio[0]);
+                        IncreaseScore(scoreRate[0]);
                         ApplyHealth(healthRecovers[0]);
                         notesByLines[i].Dequeue().Item1.SetActive(false);
-                        uIController.JudgeEffect("PRECISE", time - Time.time);
+                        uICon.JudgeEffect("PRECISE", time - Time.time);
 
                         break;
 
                     case Judgement.GREAT:
                         IncreaseCombo();
-                        IncreaseScore(scoreRatio[1]);
+                        IncreaseScore(scoreRate[1]);
                         ApplyHealth(healthRecovers[1]);
                         notesByLines[i].Dequeue().Item1.SetActive(false);
-                        uIController.JudgeEffect("GREAT", time - Time.time);
+                        uICon.JudgeEffect("GREAT", time - Time.time);
                         break;
 
                     case Judgement.NICE:
                         IncreaseCombo();
-                        IncreaseScore(scoreRatio[2]);
+                        IncreaseScore(scoreRate[2]);
                         ApplyHealth(healthRecovers[2]);
                         notesByLines[i].Dequeue().Item1.SetActive(false);
-                        uIController.JudgeEffect("NICE", time - Time.time);
+                        uICon.JudgeEffect("NICE", time - Time.time);
                         break;
 
                     case Judgement.BAD:
                         ResetCombo();
-                        IncreaseScore(scoreRatio[3]);
+                        IncreaseScore(scoreRate[3]);
                         ApplyHealth(healthRecovers[3]);
                         notesByLines[i].Dequeue().Item1.SetActive(false);
-                        uIController.JudgeEffect("BAD", time - Time.time);
+                        uICon.JudgeEffect("BAD", time - Time.time);
                         break;
                 }
             }
@@ -286,7 +284,7 @@ public class GameManager : MonoBehaviour
     private void IncreaseCombo()
     {
         combo++;
-        uIController.ComboEffect(combo);
+        uICon.ComboEffect(combo);
     }
 
 
@@ -299,7 +297,7 @@ public class GameManager : MonoBehaviour
     private void IncreaseScore(int ratio)
     {
         rawScore += ratio;
-        uIController.ScoreEffect(((double)rawScore / (totalNote * scoreRatio[0])) * 300000);
+        uICon.ScoreEffect(((double)rawScore / (totalNote * scoreRate[0])) * 300000);
 
     }
 
@@ -325,7 +323,7 @@ public class GameManager : MonoBehaviour
                 notesQueue.Dequeue().Item1.SetActive(false);
                 ResetCombo();
                 Debug.Log("BREAK");
-                uIController.JudgeEffect("BREAK", 0);
+                uICon.JudgeEffect("BREAK", 0);
                 ApplyHealth(healthRecovers[4]);
             }
         }
@@ -346,7 +344,7 @@ public class GameManager : MonoBehaviour
 
     private float getNoteXPos(int line)
     {
-        return xPoses[sheetManager.modeLine - 4][line];
+        return xPoses[sheetM.modeLine - 4][line];
     }
 
 
@@ -366,19 +364,19 @@ public class GameManager : MonoBehaviour
         {
             health = 1;
         }
-        uIController.HealthEffect(health);
+        uICon.HealthEffect(health);
     }
 
 
 }
 
 // 
-public class QueueContent
+public class QObj
 {
     public GameObject gameObject;
     public NoteComponent noteComponent;
 
-    public QueueContent(GameObject gameObject = null, NoteComponent noteComponent = null)
+    public QObj(GameObject gameObject = null, NoteComponent noteComponent = null)
     {
         this.gameObject = gameObject;
         this.noteComponent = noteComponent;
