@@ -21,9 +21,7 @@ public class NoteData : IComparable
 
     public int CompareTo(object obj)
     {
-        NoteData other = obj as NoteData;
-
-        if (other == null)
+        if (!(obj is NoteData other))
             throw new NotImplementedException();
 
         return this.timing.CompareTo(other.timing);

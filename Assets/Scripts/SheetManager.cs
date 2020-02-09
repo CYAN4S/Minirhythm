@@ -21,18 +21,23 @@ public class SheetManager : MonoBehaviour
         modeLine = 4;
 
         noteList = new List<NoteData>();
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < 10; i++)
         {
             noteList.Add(new NoteData(i / 2.0, i % 4, i % 3, 0));
         }
-        noteList.Add(new LongNoteData(11.0, 0, 0, 0, 1));
+
+        for (int i = 0; i < 20; i++)
+        {
+            //noteList.Add(new LongNoteData(6.0 + i / 2.0, i % 4, i % 3, 0, 1));
+        }
+
 
         bpmList = new List<BpmData>();
         bpmList.Add(new BpmData(0, 120));
         ///
     }
 
-    public static SheetManager GetSheetManager(SerializableSheet h)
+    public static SheetManager GetSheetManager(SerializableSheet h, SerializableInfo i)
     {
         return null;
     }

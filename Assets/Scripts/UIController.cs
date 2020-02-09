@@ -47,10 +47,20 @@ public class UIController : MonoBehaviour
         comboText.text = combo.ToString();
     }
 
+    public void ComboResetEffect(int combo)
+    {
+        comboText.text = combo.ToString();
+    }
+
     public void JudgeEffect(string judgeString, float timeGap)
     {
         judgementText.text = judgeString;
         detailText.text = (timeGap * 100).ToString("F0");
+    }
+
+    public void JudgeEffect(string judgeString)
+    {
+        judgementText.text = judgeString;
     }
 
     public void ScoreEffect(double score)
