@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
     #region PERFORMANCE VARIABLES
     private int totalNote;
     //public List<Queue<Tuple<GameObject, NoteComponent>>> notesByLines; // LEGACY
-    public List<Queue<QObj>> notesByLines;
+    public List<Queue<QObj>> notesByLines = new List<Queue<QObj>>();
     private KeyCode[] KeyCodes;
     #endregion
 
@@ -52,6 +52,8 @@ public class GameManager : MonoBehaviour
     private List<float> endTime;
 
     private List<Queue<float>> tickTime;
+
+    private List<LongObj> LongObjs = new List<LongObj>();
     #endregion
 
 
@@ -101,13 +103,15 @@ public class GameManager : MonoBehaviour
             activeLongNote.Add(null);
             endTime.Add(0);
             tickTime.Add(new Queue<float>());
+
+            LongObjs.Add(new LongObj());
         }
 
     }
 
     private void ClassifyNote()
     {
-        notesByLines = new List<Queue<QObj>>();
+
         for (int i = 0; i < sheetM.modeLine; i++)
             notesByLines.Add(new Queue<QObj>());
 
@@ -174,7 +178,6 @@ public class GameManager : MonoBehaviour
 
                 if (peek.noteComponent.noteData is LongNoteData && isInLongNote[i] == false)
                 {
-                    isInLongNote[i] = true;
                     activeLongNote[i] = peek;
                     HandleLongNoteDown(i);
                 }
@@ -219,16 +222,18 @@ public class GameManager : MonoBehaviour
     private void HandleLongNoteDown(int i)
     {
         float time = activeLongNote[i].noteComponent.time;
-        LongNoteData longNoteData = activeLongNote[i].noteComponent.noteData as LongNoteData;
         Judgement judgement = JudgeGap(time - Time.time);
 
         if (judgement == Judgement.NONE)
             return;
 
-        //IncreaseScore(scoreRate[(int)judgement]);
+        isInLongNote[i] = true;
+
+
+        LongNoteData longNoteData = activeLongNote[i].noteComponent.noteData as LongNoteData;
+
         ApplyHealth(healthRecovers[(int)judgement]);
         uICon.JudgeEffect(judgeString[(int)judgement], time - Time.time);
-
 
         if (judgement <= Judgement.GREAT)
             startJudge[i] = judgement;
@@ -238,7 +243,7 @@ public class GameManager : MonoBehaviour
         endTime[i] = time + TimeCalc.GetTime(longNoteData.lengthTiming, sheetM);
         for (double ti = longNoteData.timing + 0.25; ti < longNoteData.timing + longNoteData.lengthTiming; ti += 0.25)
         {
-            tickTime[i].Enqueue(TimeCalc.GetTime(ti, sheetM));
+            tickTime[i].Enqueue(TimeCalc.GetTime(ti + WAITTIMING, sheetM) + WAITTIME);
         }
 
 
@@ -255,6 +260,7 @@ public class GameManager : MonoBehaviour
         if (tickTime[i].Peek() > Time.time)
             return;
 
+        Debug.Log(tickTime[i].Peek());
         HandleLongNoteTick(i);
         tickTime[i].Dequeue();
 
@@ -299,7 +305,7 @@ public class GameManager : MonoBehaviour
     }
 
 
-    enum Judgement { PRECISE, GREAT, NICE, BAD, NONE }
+
     private Judgement JudgeGap(float gap)
     {
         float absGap = Mathf.Abs(gap);
@@ -383,29 +389,16 @@ public class GameManager : MonoBehaviour
     }
 
 
-    private float GetNoteYPos(double timing)
-    {
-        return (float)((timing) * scrollSpeed * 405);
-    }
-
-
-    private float GetNoteYLength(double lengthTiming)
-    {
-        return (float)(lengthTiming * scrollSpeed * 405);
-    }
-
-
-    private float GetNoteXPos(int line)
-    {
-        return xPoses[sheetM.modeLine - 4][line];
-    }
+    private float GetNoteYPos(double timing) => (float)(timing * scrollSpeed * 405);
+    private float GetNoteYLength(double lengthTiming) => (float)(lengthTiming * scrollSpeed * 405);
+    private float GetNoteXPos(int line) => xPoses[sheetM.modeLine - 4][line];
 
 
     private void ApplyHealth(float delta = 0)
     {
         if (!isAlive) return;
 
-        health += delta;
+        health = (health + delta > 1) ? 1 : health + delta;
 
         if (health < 0)
         {
@@ -413,13 +406,11 @@ public class GameManager : MonoBehaviour
             health = 0;
         }
 
-        else if (health > 1)
-        {
-            health = 1;
-        }
         uICon.HealthEffect(health);
     }
 }
+
+public enum Judgement { PRECISE, GREAT, NICE, BAD, NONE }
 
 // 
 public class QObj
@@ -431,5 +422,23 @@ public class QObj
     {
         this.gameObject = gameObject;
         this.noteComponent = noteComponent;
+    }
+}
+
+public class LongObj
+{
+    public bool isInLongNote;
+    public Judgement judgement;
+    public QObj qObj;
+    public float endTime;
+    public Queue<float> tick;
+
+    public LongObj()
+    {
+        isInLongNote = false;
+        judgement = Judgement.NONE;
+        qObj = null;
+        endTime = -1;
+        tick = new Queue<float>();
     }
 }

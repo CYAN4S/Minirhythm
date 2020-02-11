@@ -21,15 +21,13 @@ public class SheetManager : MonoBehaviour
         modeLine = 4;
 
         noteList = new List<NoteData>();
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 1000; i++)
         {
-            noteList.Add(new NoteData(i / 2.0, i % 4, i % 3, 0));
+            //noteList.Add(new NoteData(i / 4.0, i % 4, i % 3, 0));
         }
 
-        for (int i = 0; i < 20; i++)
-        {
-            //noteList.Add(new LongNoteData(6.0 + i / 2.0, i % 4, i % 3, 0, 1));
-        }
+        noteList.Add(new LongNoteData(0, 0, 0, 0, 2));
+
 
 
         bpmList = new List<BpmData>();
