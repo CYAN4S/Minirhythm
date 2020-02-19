@@ -11,6 +11,7 @@ public class SheetManager : MonoBehaviour
     public int modeLine;
     public List<NoteData> noteList;
     public List<BpmData> bpmList;
+    public int noteCount;
     //public double cruelty;
 
     //public List<????> TimeMetadata;
@@ -19,19 +20,22 @@ public class SheetManager : MonoBehaviour
     {
         /// USE FOR TESTING
         modeLine = 4;
+        System.Random random = new System.Random();
 
         noteList = new List<NoteData>();
-        for (int i = 0; i < 1000; i++)
+        for (int i = 0; i < 10; i++)
         {
-            //noteList.Add(new NoteData(i / 4.0, i % 4, i % 3, 0));
+            noteList.Add(new NoteData(i / 2.0, random.Next(0, 4), i % 2, 0));
+            noteList.Add(new NoteData(i / 2.0, -1, 2, 0));
         }
 
-        noteList.Add(new LongNoteData(0, 0, 0, 0, 2));
-
-
+        //noteList.Add(new LongNoteData(0, 0, 0, 0, 2));
 
         bpmList = new List<BpmData>();
         bpmList.Add(new BpmData(0, 120));
+
+        noteList.Sort();
+        noteCount = 10;
         ///
     }
 

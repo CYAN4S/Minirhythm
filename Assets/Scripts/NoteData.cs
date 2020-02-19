@@ -10,6 +10,7 @@ public class NoteData : IComparable
     public int line;
     public int audioCode;
     public byte playType;
+    public float Time { get; private set; }
 
     public NoteData(double timing, int line, int audioCode, byte playType)
     {
@@ -17,6 +18,11 @@ public class NoteData : IComparable
         this.line = line;
         this.audioCode = audioCode;
         this.playType = playType;
+    }
+
+    public void SetTime(SheetManager sheetManager)
+    {
+        Time = TimeCalc.GetTime(timing + GameManager.WAITTIMING, sheetManager) + GameManager.WAITTIME;
     }
 
     public int CompareTo(object obj)

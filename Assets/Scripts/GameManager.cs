@@ -25,14 +25,13 @@ public class GameManager : MonoBehaviour
 
     #region PERFORMANCE VARIABLES
     private int totalNote;
-    //public List<Queue<Tuple<GameObject, NoteComponent>>> notesByLines; // LEGACY
     public List<Queue<QObj>> notesByLines = new List<Queue<QObj>>();
-    private KeyCode[] KeyCodes;
+    public Queue<NoteData> bgmNotes = new Queue<NoteData>();
     #endregion
 
     #region SYSTEM SETTINGS
-    public const float WAITTIME = 5f;
-    public const double WAITTIMING = 2;
+    public static readonly float WAITTIME = 5f;
+    public static readonly double WAITTIMING = 2;
     private static readonly double[] judgeTimeDif = { 0.05, 0.1, 0.3, 0.5 };
     private static readonly int[] scoreRate = { 100, 80, 50, 10 };
     private static readonly float[] healthRecovers = { 0.05f, 0.02f, 0.01f, -0.05f, -0.1f };
@@ -45,22 +44,12 @@ public class GameManager : MonoBehaviour
             new float[] { -300, -100, 100, 300}  // 8K
         };
     private readonly string[] judgeString = { "PRECISE", "GREAT", "NICE", "BAD", "BREAK", "FAULT" };
-
-    private List<bool> isInLongNote;
-    private List<Judgement> startJudge;
-    private List<QObj> activeLongNote;
-    private List<float> endTime;
-
-    private List<Queue<float>> tickTime;
-
     private List<LongObj> LongObjs = new List<LongObj>();
     #endregion
 
 
     private void Start()
     {
-        SetKeyCodes();
-        uICon.SetPressingEffects(sheetM.modeLine);
         ClassifyNote();
         MoveNotes();
         ApplyHealth();
@@ -69,6 +58,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        PlayBgm();
         JudgePlayInput();
         ProcessSettingInput();
         RemoveBreakNote();
@@ -81,43 +71,25 @@ public class GameManager : MonoBehaviour
     }
 
 
-    private void SetKeyCodes()
+    private void ClassifyNote()
     {
-        switch (sheetM.modeLine)
-        {
-            case 4: KeyCodes = inputM.KeyCodes4K; break;
-            case 5: KeyCodes = inputM.KeyCodes5K; break;
-            case 6: KeyCodes = inputM.KeyCodes6K; break;
-            case 8: KeyCodes = inputM.KeyCodes8K; break;
-        }
-
-        isInLongNote = new List<bool>();
-        startJudge = new List<Judgement>();
-        activeLongNote = new List<QObj>();
-        endTime = new List<float>();
-        tickTime = new List<Queue<float>>();
         for (int i = 0; i < sheetM.modeLine; i++)
         {
-            isInLongNote.Add(false);
-            startJudge.Add(Judgement.NONE);
-            activeLongNote.Add(null);
-            endTime.Add(0);
-            tickTime.Add(new Queue<float>());
-
+            notesByLines.Add(new Queue<QObj>());
             LongObjs.Add(new LongObj());
         }
 
-    }
-
-    private void ClassifyNote()
-    {
-
-        for (int i = 0; i < sheetM.modeLine; i++)
-            notesByLines.Add(new Queue<QObj>());
-
         foreach (var noteData in sheetM.noteList)
         {
+            noteData.SetTime(sheetM);
             var noteObject = MakeNoteObject(noteData);
+
+            if (noteData.line < 0 || noteData.line >= sheetM.modeLine)
+            {
+                bgmNotes.Enqueue(noteData);
+                continue;
+            }
+
             notesByLines[noteData.line].Enqueue(noteObject);
         }
 
@@ -136,7 +108,7 @@ public class GameManager : MonoBehaviour
         }
 
         noteComponent.noteData = noteData;
-        noteComponent.time = TimeCalc.GetTime(noteData.timing + WAITTIMING, sheetM) + WAITTIME;
+        //noteComponent.time = TimeCalc.GetTime(noteData.timing + WAITTIMING, sheetM) + WAITTIME;
         return new QObj(gameObject, noteComponent);
     }
 
@@ -170,15 +142,15 @@ public class GameManager : MonoBehaviour
             if (notesByLines[i].Count == 0)
                 continue;
 
-            if (Input.GetKeyDown(KeyCodes[i]))
+            if (Input.GetKeyDown(inputM.KeyCodes[i]))
             {
                 QObj peek = notesByLines[i].Peek();
 
                 audioM.PlayAudioClip(peek.noteComponent.noteData.audioCode);
 
-                if (peek.noteComponent.noteData is LongNoteData && isInLongNote[i] == false)
+                if (peek.noteComponent.noteData is LongNoteData && LongObjs[i].isInLongNote == false)
                 {
-                    activeLongNote[i] = peek;
+                    LongObjs[i].qObj = peek;
                     HandleLongNoteDown(i);
                 }
                 else
@@ -187,12 +159,12 @@ public class GameManager : MonoBehaviour
                 }
             }
 
-            else if (Input.GetKey(KeyCodes[i]) && isInLongNote[i])
+            else if (Input.GetKey(inputM.KeyCodes[i]) && LongObjs[i].isInLongNote)
             {
                 HandleLongNote(i);
             }
 
-            else if (Input.GetKeyUp(KeyCodes[i]) && isInLongNote[i])
+            else if (Input.GetKeyUp(inputM.KeyCodes[i]) && LongObjs[i].isInLongNote)
             {
                 HandleLongNoteUp(i);
             }
@@ -201,7 +173,7 @@ public class GameManager : MonoBehaviour
 
     private void HandleNote(int i, QObj qObj)
     {
-        float time = qObj.noteComponent.time;
+        float time = qObj.noteComponent.noteData.Time;
         Judgement judgement = JudgeGap(time - Time.time);
 
         if (judgement == Judgement.NONE)
@@ -221,29 +193,29 @@ public class GameManager : MonoBehaviour
 
     private void HandleLongNoteDown(int i)
     {
-        float time = activeLongNote[i].noteComponent.time;
+        float time = LongObjs[i].qObj.noteComponent.noteData.Time;
         Judgement judgement = JudgeGap(time - Time.time);
 
         if (judgement == Judgement.NONE)
             return;
 
-        isInLongNote[i] = true;
+        LongObjs[i].isInLongNote = true;
 
 
-        LongNoteData longNoteData = activeLongNote[i].noteComponent.noteData as LongNoteData;
+        LongNoteData longNoteData = LongObjs[i].qObj.noteComponent.noteData as LongNoteData;
 
         ApplyHealth(healthRecovers[(int)judgement]);
         uICon.JudgeEffect(judgeString[(int)judgement], time - Time.time);
 
         if (judgement <= Judgement.GREAT)
-            startJudge[i] = judgement;
+            LongObjs[i].judgement = judgement;
         else
-            startJudge[i] = Judgement.NICE;
+            LongObjs[i].judgement = Judgement.NICE;
 
-        endTime[i] = time + TimeCalc.GetTime(longNoteData.lengthTiming, sheetM);
+        LongObjs[i].endTime = time + TimeCalc.GetTime(longNoteData.lengthTiming, sheetM);
         for (double ti = longNoteData.timing + 0.25; ti < longNoteData.timing + longNoteData.lengthTiming; ti += 0.25)
         {
-            tickTime[i].Enqueue(TimeCalc.GetTime(ti + WAITTIMING, sheetM) + WAITTIME);
+            LongObjs[i].tick.Enqueue(TimeCalc.GetTime(ti + WAITTIMING, sheetM) + WAITTIME);
         }
 
 
@@ -253,22 +225,32 @@ public class GameManager : MonoBehaviour
             ResetCombo();
     }
 
+    private void PlayBgm()
+    {
+        while (bgmNotes.Count != 0)
+        {
+            if (bgmNotes.Peek().Time > Time.time)
+                return;
+            
+            audioM.PlayAudioClip(bgmNotes.Dequeue().audioCode);
+        }
+    }
+
     private void HandleLongNote(int i)
     {
-        if (tickTime[i].Count == 0)
+        if (LongObjs[i].tick.Count == 0)
             return;
-        if (tickTime[i].Peek() > Time.time)
+        if (LongObjs[i].tick.Peek() > Time.time)
             return;
 
-        Debug.Log(tickTime[i].Peek());
         HandleLongNoteTick(i);
-        tickTime[i].Dequeue();
+        LongObjs[i].tick.Dequeue();
 
     }
 
     private void HandleLongNoteTick(int i)
     {
-        Judgement judgement = startJudge[i];
+        Judgement judgement = LongObjs[i].judgement;
         ApplyHealth(healthRecovers[(int)judgement] / 10f);
         uICon.JudgeEffect(judgeString[(int)judgement]);
         IncreaseCombo();
@@ -276,13 +258,13 @@ public class GameManager : MonoBehaviour
 
     private void HandleLongNoteUp(int i)
     {
-        float time = endTime[i];
+        float time = LongObjs[i].endTime;
         Judgement judgement = JudgeGap(time - Time.time);
 
         if (judgement <= Judgement.BAD)
         {
-            IncreaseScore(scoreRate[(int)startJudge[i]]);
-            ApplyHealth(healthRecovers[(int)startJudge[i]]);
+            IncreaseScore(scoreRate[(int)LongObjs[i].judgement]);
+            ApplyHealth(healthRecovers[(int)LongObjs[i].judgement]);
             uICon.JudgeEffect(judgeString[(int)judgement], time - Time.time);
             IncreaseCombo();
         }
@@ -298,10 +280,10 @@ public class GameManager : MonoBehaviour
     private void ResetLong(int i)
     {
         notesByLines[i].Dequeue().gameObject.SetActive(false);
-        activeLongNote[i] = null;
-        startJudge[i] = Judgement.NONE;
-        isInLongNote[i] = false;
-        activeLongNote[i] = null;
+        LongObjs[i].qObj = null;
+        LongObjs[i].judgement = Judgement.NONE;
+        LongObjs[i].isInLongNote = false;
+        LongObjs[i].qObj = null;
     }
 
 
@@ -334,7 +316,7 @@ public class GameManager : MonoBehaviour
     private void IncreaseScore(int ratio)
     {
         rawScore += ratio;
-        uICon.ScoreEffect((double)rawScore / (totalNote * scoreRate[0]) * 300000);
+        uICon.ScoreEffect((double)rawScore / (sheetM.noteCount * scoreRate[0]) * 300000);
 
     }
 
@@ -349,7 +331,7 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < notesByLines.Count; i++)
         {
-            if (isInLongNote[i])
+            if (LongObjs[i].isInLongNote)
                 continue;
 
             Queue<QObj> notesQueue = notesByLines[i];
@@ -357,7 +339,7 @@ public class GameManager : MonoBehaviour
                 continue;
 
             var noteComponent = notesQueue.Peek().noteComponent;
-            float time = noteComponent.time;
+            float time = noteComponent.noteData.Time;
 
             if (Time.time - time > judgeTimeDif[3])
             {
@@ -373,10 +355,10 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < notesByLines.Count; i++)
         {
-            if (!isInLongNote[i])
+            if (!LongObjs[i].isInLongNote)
                 continue;
 
-            if (Time.time - endTime[i] > judgeTimeDif[3])
+            if (Time.time - LongObjs[i].endTime > judgeTimeDif[3])
             {
                 ResetLong(i);
                 ApplyHealth(healthRecovers[2]);

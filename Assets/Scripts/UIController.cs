@@ -9,15 +9,20 @@ public class UIController : MonoBehaviour
     #region UNITYEDITOR SETUPS
     public List<GameObject> PressingEffects4K, PressingEffects5K, PressingEffects6K, PressingEffects8K;
     public TextMeshProUGUI judgementText, comboText, scoreText, detailText, speedText;
-    public InputManager inputManager;
+    public GameManager gameM;
+    InputManager inputM;
+    SheetManager sheetM;
     public Image grooveMeter;
     #endregion
 
     public List<GameObject> PressingEffects;
 
-    public void SetPressingEffects(int modeLine)
+    private void Start() 
     {
-        switch (modeLine)
+        sheetM = gameM.sheetM;
+        inputM = gameM.inputM;
+
+        switch (sheetM.modeLine)
         {
             case 4: PressingEffects = PressingEffects4K; break;
             case 5: PressingEffects = PressingEffects5K; break;
@@ -28,16 +33,15 @@ public class UIController : MonoBehaviour
 
     private void Update() 
     {
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < inputM.KeyCodes.Length; i++)
         {
-            /// 4K ONLY
-            if (Input.GetKey(inputManager.KeyCodes4K[i]))
+            if (Input.GetKey(inputM.KeyCodes[i]))
             {
-                PressingEffects4K[i].SetActive(true);
+                PressingEffects[i].SetActive(true);
             }
             else
             {
-                PressingEffects4K[i].SetActive(false);
+                PressingEffects[i].SetActive(false);
             }
         }
     }
