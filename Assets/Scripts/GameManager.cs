@@ -82,7 +82,7 @@ public class GameManager : MonoBehaviour
         foreach (var noteData in sheetM.noteList)
         {
             noteData.SetTime(sheetM);
-            var noteObject = MakeNoteObject(noteData);
+            
 
             if (noteData.line < 0 || noteData.line >= sheetM.modeLine)
             {
@@ -90,6 +90,7 @@ public class GameManager : MonoBehaviour
                 continue;
             }
 
+            var noteObject = MakeNoteObject(noteData);
             notesByLines[noteData.line].Enqueue(noteObject);
         }
 
@@ -109,7 +110,7 @@ public class GameManager : MonoBehaviour
 
         noteComponent.noteData = noteData;
         //noteComponent.time = TimeCalc.GetTime(noteData.timing + WAITTIMING, sheetM) + WAITTIME;
-        return new QObj(gameObject, noteComponent);
+        return new QObj(gameObject, noteData);
     }
 
 
@@ -146,9 +147,9 @@ public class GameManager : MonoBehaviour
             {
                 QObj peek = notesByLines[i].Peek();
 
-                audioM.PlayAudioClip(peek.noteComponent.noteData.audioCode);
+                audioM.PlayAudioClip(peek.noteData.audioCode);
 
-                if (peek.noteComponent.noteData is LongNoteData && LongObjs[i].isInLongNote == false)
+                if (peek.noteData is LongNoteData && LongObjs[i].isInLongNote == false)
                 {
                     LongObjs[i].qObj = peek;
                     HandleLongNoteDown(i);
@@ -173,7 +174,7 @@ public class GameManager : MonoBehaviour
 
     private void HandleNote(int i, QObj qObj)
     {
-        float time = qObj.noteComponent.noteData.Time;
+        float time = qObj.noteData.Time;
         Judgement judgement = JudgeGap(time - Time.time);
 
         if (judgement == Judgement.NONE)
@@ -193,7 +194,7 @@ public class GameManager : MonoBehaviour
 
     private void HandleLongNoteDown(int i)
     {
-        float time = LongObjs[i].qObj.noteComponent.noteData.Time;
+        float time = LongObjs[i].qObj.noteData.Time;
         Judgement judgement = JudgeGap(time - Time.time);
 
         if (judgement == Judgement.NONE)
@@ -202,7 +203,7 @@ public class GameManager : MonoBehaviour
         LongObjs[i].isInLongNote = true;
 
 
-        LongNoteData longNoteData = LongObjs[i].qObj.noteComponent.noteData as LongNoteData;
+        LongNoteData longNoteData = LongObjs[i].qObj.noteData as LongNoteData;
 
         ApplyHealth(healthRecovers[(int)judgement]);
         uICon.JudgeEffect(judgeString[(int)judgement], time - Time.time);
@@ -338,8 +339,7 @@ public class GameManager : MonoBehaviour
             if (notesQueue.Count == 0)
                 continue;
 
-            var noteComponent = notesQueue.Peek().noteComponent;
-            float time = noteComponent.noteData.Time;
+            float time = notesQueue.Peek().noteData.Time;
 
             if (Time.time - time > judgeTimeDif[3])
             {
@@ -398,12 +398,12 @@ public enum Judgement { PRECISE, GREAT, NICE, BAD, NONE }
 public class QObj
 {
     public GameObject gameObject;
-    public NoteComponent noteComponent;
+    public NoteData noteData;
 
-    public QObj(GameObject gameObject = null, NoteComponent noteComponent = null)
+    public QObj(GameObject gameObject = null, NoteData noteData = null)
     {
         this.gameObject = gameObject;
-        this.noteComponent = noteComponent;
+        this.noteData = noteData;
     }
 }
 

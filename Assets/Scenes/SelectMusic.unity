@@ -1072,6 +1072,7 @@ MonoBehaviour:
   modeLine: 0
   noteList: []
   bpmList: []
+  noteCount: 0
 --- !u!1 &1179362750
 GameObject:
   m_ObjectHideFlags: 0
@@ -1506,25 +1507,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 140468904}
     m_Modifications:
-    - target: {fileID: 3263444326825947167, guid: 168b4dcac55c823468e59407a8130f31,
+    - target: {fileID: 3263444326825947165, guid: 168b4dcac55c823468e59407a8130f31,
         type: 3}
-      propertyPath: m_textInfo.characterCount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3263444326825947167, guid: 168b4dcac55c823468e59407a8130f31,
-        type: 3}
-      propertyPath: m_textInfo.wordCount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3263444326825947167, guid: 168b4dcac55c823468e59407a8130f31,
-        type: 3}
-      propertyPath: m_textInfo.lineCount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3263444326825947167, guid: 168b4dcac55c823468e59407a8130f31,
-        type: 3}
-      propertyPath: m_textInfo.pageCount
-      value: 0
+      propertyPath: m_Name
+      value: Title
       objectReference: {fileID: 0}
     - target: {fileID: 3263444328109045402, guid: 168b4dcac55c823468e59407a8130f31,
         type: 3}

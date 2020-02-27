@@ -1,0 +1,17 @@
+{
+    "songName": "NO BPM",
+    "displayBpm": "120",
+    "artistType": [
+        "Composed",
+        "Visualized"
+    ],
+    "artistName": [
+        "CYAN4S",
+        "CYAN4S"
+    ],
+    "bpmList": [
+    ],
+    "audios": [
+        "a.wav"
+    ]
+}

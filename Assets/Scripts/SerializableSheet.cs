@@ -17,6 +17,14 @@ public class SerializableSheet
 
     // Override when count is more than 0.
     public List<BpmData> bpmList;
+
+    public bool IsValid()
+    {
+        if (modeLine != 4 && modeLine != 5 && modeLine != 6 && modeLine != 8) { return false; }
+        if (0 >= difficulty || difficulty > 15) { return false; }
+        if (0 > difficultyType || difficultyType > 3) { return false; }
+        return true;
+    }
 }
 
 // Extension of Serialized file of this class object is ".mri".
@@ -32,5 +40,11 @@ public class SerializableInfo
     public List<BpmData> bpmList;
 
     public List<string> audios;
+
+    public bool IsValid()
+    {
+        if (bpmList.Count == 0 || audios.Count == 0) { return false; }
+        return true;
+    }
 
 }
