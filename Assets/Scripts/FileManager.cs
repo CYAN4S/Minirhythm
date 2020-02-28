@@ -9,7 +9,7 @@ public class FileManager : MonoBehaviour
 {
     string SongsDirString = System.IO.Path.Combine(Application.streamingAssetsPath, "Songs");
 
-    DirectoryInfo SongsDir;
+    DirectoryInfo SongsFolder;
 
     public SelectUIController selectUIController;
 
@@ -21,36 +21,41 @@ public class FileManager : MonoBehaviour
 
     private void Start()
     {
-        SongsDir = new DirectoryInfo(SongsDirString);
-        if (!SongsDir.Exists)
-            SongsDir.Create();
-
-        var SongDirs = SongsDir.GetDirectories();
-        foreach (var item in SongDirs)
+        SongsFolder = new DirectoryInfo(SongsDirString);
+        if (!SongsFolder.Exists)
         {
-            FileInfo[] a = item.GetFiles("info.mri");
-            if (a.Count() != 1) continue;
+            SongsFolder.Create();
+            return;
+        }
 
-            FileInfo[] b = item.GetFiles("*.mrs");
-            if (b.Count() < 1) continue;
+        DirectoryInfo[] Folders = SongsFolder.GetDirectories();
+        foreach (DirectoryInfo folder in Folders)
+        {
+            FileInfo[] infoFile = folder.GetFiles("info.mri");
+            if (infoFile.Count() != 1)
+                continue;
+
+            FileInfo[] sheetFiles = folder.GetFiles("*.mrs");
+            if (sheetFiles.Count() < 1)
+                continue;
 
             SerializableInfo info;
             List<SerializableSheet> sheets = new List<SerializableSheet>();
 
-            using (StreamReader sr = a[0].OpenText())
+            using (StreamReader sr = infoFile[0].OpenText())
             {
-                string infoString = sr.ReadToEnd();
-                info = JsonUtility.FromJson<SerializableInfo>(infoString);
+                string infoJson = sr.ReadToEnd();
+                info = JsonUtility.FromJson<SerializableInfo>(infoJson);
                 if (!info.IsValid())
                     continue;
             }
 
-            foreach (var mrs in b)
+            foreach (FileInfo mrs in sheetFiles)
             {
                 using (StreamReader sr = mrs.OpenText())
                 {
-                    string sheetString = sr.ReadToEnd();
-                    var sheet = JsonUtility.FromJson<SerializableSheet>(sheetString);
+                    string sheetJson = sr.ReadToEnd();
+                    SerializableSheet sheet = JsonUtility.FromJson<SerializableSheet>(sheetJson);
                     if (!sheet.IsValid())
                         continue;
                     sheets.Add(sheet);
@@ -60,9 +65,9 @@ public class FileManager : MonoBehaviour
             if (sheets.Count == 0)
                 continue;
 
-            FileObj newObj = new FileObj(item, info, sheets);
+            FileObj newObj = new FileObj(folder, info, sheets);
             fileObjs.Add(newObj);
-            Debug.Log(item.FullName);
+            // Debug.Log(folder.FullName);
         }
 
         selectUIController.SetSelectMusicUI(fileObjs);

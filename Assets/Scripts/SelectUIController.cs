@@ -1,11 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class SelectUIController : MonoBehaviour
 {
     public GameObject uL;
     public GameObject lIPrefab;
+
+    public TextMeshProUGUI[] Difficulties;
+
+
+    public GameObject startButton;
+
+    public int currentLine = 4;
 
     public void SetSelectMusicUI(List<FileObj> fileObjs)
     {
@@ -19,14 +27,22 @@ public class SelectUIController : MonoBehaviour
             var licomp = obj.GetComponent<LIComponent>();
             licomp.fileObj = item;
             licomp.title.text = item.info.songName;
-
-
+            licomp.controller = this;
         }
     }
 
-    public void Add(FileObj fileObj)
+    //private SerializableSheet[,] choosing = new SerializableSheet[4, 4];
+    public void SetChoseMusicUI(FileObj fileObj)
     {
-        
+        foreach (SerializableSheet item in fileObj.sheets)
+        {
+            int l, t; double d;
+            l = item.modeLine;
+            t = item.difficultyType;
+            d = item.difficulty;
+
+            Difficulties[t].text = d.ToString("0.0");
+        }
     }
 
 

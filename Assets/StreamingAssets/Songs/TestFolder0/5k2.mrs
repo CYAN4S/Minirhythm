@@ -1,0 +1,33 @@
+{
+    "modeLine": 5,
+    "difficulty": 8.4,
+    "difficultyType": 2,
+    "regNoteList": [
+        {
+            "timing": 0.0,
+            "line": 0,
+            "audioCode": 0,
+            "playType": 0
+        },
+        {
+            "timing": 1.0,
+            "line": 1,
+            "audioCode": 1,
+            "playType": 1
+        },
+        {
+            "timing": 2.0,
+            "line": 2,
+            "audioCode": 2,
+            "playType": 2
+        },
+        {
+            "timing": 3.0,
+            "line": 3,
+            "audioCode": 3,
+            "playType": 3
+        }
+    ],
+    "longNoteList": [],
+    "bpmList": []
+}

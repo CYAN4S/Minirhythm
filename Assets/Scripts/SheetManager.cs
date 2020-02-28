@@ -18,7 +18,7 @@ public class SheetManager : MonoBehaviour
 
     private void Awake()
     {
-        /// USE FOR TESTING
+        // // USE FOR TESTING
         // modeLine = 4;
         // System.Random random = new System.Random();
 
@@ -38,7 +38,7 @@ public class SheetManager : MonoBehaviour
 
         // var keynote = from note in noteList where note.line != -1 select note;
         // noteCount = keynote.Count();
-        ///
+        // //
     }
 
     public void GetSheetManager(SerializableSheet h, SerializableInfo i)

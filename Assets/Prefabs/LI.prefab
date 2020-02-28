@@ -137,7 +137,7 @@ MonoBehaviour:
     spaceCount: 2
     wordCount: 3
     linkCount: 0
-    lineCount: 2
+    lineCount: 1
     pageCount: 1
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
@@ -272,7 +272,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3263444326978289720}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8327801531390240280}
+        m_MethodName: OnClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &3263444328109045402
 GameObject:
   m_ObjectHideFlags: 0
@@ -332,3 +343,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: {fileID: 3263444326825947167}
+  fileObj:
+    info:
+      songName: 
+      displayBpm: 
+      artistType: []
+      artistName: []
+      bpmList: []
+      audios: []
+    sheets: []

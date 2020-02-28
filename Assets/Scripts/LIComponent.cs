@@ -7,6 +7,10 @@ public class LIComponent : MonoBehaviour
 {
     public TextMeshProUGUI title;
     public FileObj fileObj;
+    public SelectUIController controller;
     
-    
+    public void OnClick()
+    {
+        controller.SetChoseMusicUI(fileObj);
+    }
 }
