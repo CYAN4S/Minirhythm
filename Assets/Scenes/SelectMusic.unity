@@ -3248,6 +3248,7 @@ MonoBehaviour:
     regNoteList: []
     longNoteList: []
     bpmList: []
+  sheetManager: {fileID: 1136283876}
 --- !u!114 &1587792364 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1036071488175942230, guid: acd741da5446c154f9cd0673b5e3e43f,

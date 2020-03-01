@@ -12,6 +12,7 @@ public class SheetManager : MonoBehaviour
     public List<NoteData> noteList;
     public List<BpmData> bpmList;
     public int noteCount;
+    public static SheetManager instance;
 
     //public double cruelty;
     //public List<????> TimeMetadata;
@@ -39,6 +40,16 @@ public class SheetManager : MonoBehaviour
         // var keynote = from note in noteList where note.line != -1 select note;
         // noteCount = keynote.Count();
         // //
+        DontDestroyOnLoad(this);
+
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(this);
+        }
     }
 
     public void GetSheetManager(SerializableSheet h, SerializableInfo i)

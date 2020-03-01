@@ -21,11 +21,16 @@ public class FileManager : MonoBehaviour
 
     private void Start()
     {
+        StartCoroutine(ExploreAsync());
+    }
+
+    IEnumerator ExploreAsync()
+    {
         SongsFolder = new DirectoryInfo(SongsDirString);
         if (!SongsFolder.Exists)
         {
             SongsFolder.Create();
-            return;
+            yield return null;
         }
 
         DirectoryInfo[] Folders = SongsFolder.GetDirectories();
@@ -67,10 +72,10 @@ public class FileManager : MonoBehaviour
 
             FileObj newObj = new FileObj(folder, info, sheets);
             fileObjs.Add(newObj);
-            // Debug.Log(folder.FullName);
         }
 
         selectUIController.SetSelectMusicUI(fileObjs);
+        yield return null;
     }
 }
 

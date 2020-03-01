@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class SelectUIController : MonoBehaviour
 {
@@ -19,6 +20,9 @@ public class SelectUIController : MonoBehaviour
     public FileObj currentObj;
     public SerializableInfo currentInfo;
     public SerializableSheet currentSheet;
+
+    public SheetManager sheetManager;
+    public AudioManager audioManager;
 
     private void Start()
     {
@@ -100,6 +104,18 @@ public class SelectUIController : MonoBehaviour
 
     public void OnGameStart()
     {
+        sheetManager.GetSheetManager(currentSheet, currentInfo);
+        audioManager.GetAudioClips();
+        StartCoroutine(LoadAsync(1));
+    }
 
+    IEnumerator LoadAsync(int sceneIndex)
+    {
+        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneIndex);
+        while (!operation.isDone)
+        {
+            Debug.Log(operation.progress);
+            yield return null;
+        }
     }
 }
