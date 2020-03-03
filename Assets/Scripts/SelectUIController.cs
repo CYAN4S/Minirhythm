@@ -105,8 +105,8 @@ public class SelectUIController : MonoBehaviour
     public void OnGameStart()
     {
         sheetManager.GetSheetManager(currentSheet, currentInfo);
-        audioManager.GetAudioClips();
-        StartCoroutine(LoadAsync(1));
+        audioManager.SetAudioManager(currentObj);
+        //StartCoroutine(LoadAsync(1));
     }
 
     IEnumerator LoadAsync(int sceneIndex)
