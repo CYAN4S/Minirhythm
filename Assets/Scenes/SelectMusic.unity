@@ -2769,7 +2769,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 031b3be22efdde744b88f5a3e01b9dc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  songName: 
+  songName: NULL
   displayBpm: 
   modeLine: 0
   noteList: []

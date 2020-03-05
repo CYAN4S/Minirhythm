@@ -32,8 +32,9 @@ public class AudioManager : MonoBehaviour
 
     public void SetAudioManager(FileObj fileObj)
     {
-        GetAudioClips(fileObj);
-        MakeAudioSources();
+        Debug.Log("SET");
+        StartCoroutine(GetAudioClips(fileObj));
+        //MakeAudioSources();
     }
 
     public void MakeAudioSources()
@@ -61,15 +62,28 @@ public class AudioManager : MonoBehaviour
 
     IEnumerator GetAudioClips(FileObj fileObj)
     {
-        string basePath = "file://" + fileObj.directory.FullName;
+        string basePath = fileObj.directory.FullName;
+        Debug.Log(basePath);
 
-        foreach (string fileName in fileObj.info.audios)
+        for (int i = 0; i < fileObj.info.audios.Count; i++)
         {
-            string path;
+            string fileName = fileObj.info.audios[i];
+            string path = Path.Combine(basePath, fileName);
+            Debug.Log(path);
             audios.Add(null);
+            if (File.Exists(path))
+            {
+                Debug.Log($"{i}: {path}");
+            }
+            else
+            {
+                Debug.Log($"{i}: audio file {path} not exists.");
+                continue;
+            }
+
 
             using (UnityWebRequest www =
-            UnityWebRequestMultimedia.GetAudioClip(path = Path.Combine(basePath, fileName), AudioType.WAV))
+            UnityWebRequestMultimedia.GetAudioClip(path, AudioType.WAV))
             {
                 yield return www.SendWebRequest();
                 if (www.isNetworkError)
