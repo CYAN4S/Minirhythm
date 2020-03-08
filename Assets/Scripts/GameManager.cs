@@ -50,6 +50,8 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        inputM = InputManager.instance;
+        audioM = AudioManager.instance;
         ClassifyNote();
         MoveNotes();
         ApplyHealth();

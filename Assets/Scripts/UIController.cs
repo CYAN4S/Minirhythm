@@ -10,7 +10,7 @@ public class UIController : MonoBehaviour
     public List<GameObject> PressingEffects4K, PressingEffects5K, PressingEffects6K, PressingEffects8K;
     public TextMeshProUGUI judgementText, comboText, scoreText, detailText, speedText;
     public GameManager gameM;
-    InputManager inputM;
+    public InputManager inputM;
     SheetManager sheetM;
     public Image grooveMeter;
     #endregion
@@ -20,7 +20,7 @@ public class UIController : MonoBehaviour
     private void Start() 
     {
         sheetM = gameM.sheetM;
-        inputM = gameM.inputM;
+        inputM = InputManager.instance;
 
         switch (sheetM.modeLine)
         {

@@ -3,7 +3,7 @@
     {
         "**/.DS_Store":true,
         "**/.git":true,
-        "**/.gitignore":true,
+        "**/.gitignore":false,
         "**/.gitmodules":true,
         "**/*.booproj":true,
         "**/*.pidb":true,
@@ -51,6 +51,13 @@
         "Obj/":true,
         "ProjectSettings/":true,
         "temp/":true,
-        "Temp/":true
+        "Temp/":true,
+
+        "**/*.csproj":true,
+        "**/*.sln":true,
+        "**/*.gitattributes":true,
+        "**/Plugins":true,
+        "**/TextMesh Pro":true,
+        "**/Packages":true,
     }
 }

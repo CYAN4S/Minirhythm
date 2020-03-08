@@ -19,27 +19,27 @@ public class SheetManager : MonoBehaviour
 
     private void Awake()
     {
-        // // USE FOR TESTING
-        // modeLine = 4;
-        // System.Random random = new System.Random();
+        // USE FOR TESTING
+        modeLine = 4;
+        System.Random random = new System.Random();
 
-        // noteList = new List<NoteData>();
-        // for (int i = 0; i < 20; i++)
-        // {
-        //     noteList.Add(new NoteData(i / 4.0, random.Next(0, 4), i % 2, 0));
-        //     noteList.Add(new NoteData(i / 4.0, -1, 2, 0));
-        // }
+        noteList = new List<NoteData>();
+        for (int i = 0; i < 20; i++)
+        {
+            noteList.Add(new NoteData(i / 4.0, random.Next(0, 4), i % 2, 0));
+            noteList.Add(new NoteData(i / 4.0, -1, 2, 0));
+        }
 
-        // //noteList.Add(new LongNoteData(0, 0, 0, 0, 2));
+        //noteList.Add(new LongNoteData(0, 0, 0, 0, 2));
 
-        // bpmList = new List<BpmData>();
-        // bpmList.Add(new BpmData(0, 120));
+        bpmList = new List<BpmData>();
+        bpmList.Add(new BpmData(0, 120));
 
-        // noteList.Sort();
+        noteList.Sort();
 
-        // var keynote = from note in noteList where note.line != -1 select note;
-        // noteCount = keynote.Count();
-        // //
+        var keynote = from note in noteList where note.line != -1 select note;
+        noteCount = keynote.Count();
+        //
         DontDestroyOnLoad(this);
 
         if (instance == null)

@@ -19,6 +19,22 @@ public class FileManager : MonoBehaviour
 
     public List<FileObj> fileObjs = new List<FileObj>();
 
+    public FileManager instance;
+
+    private void Awake() 
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+
+        else
+        {
+            Debug.LogError("Singleton ERROR: FileManager");
+            Destroy(this);
+        }
+    }
+
     private void Start()
     {
         StartCoroutine(ExploreAsync());

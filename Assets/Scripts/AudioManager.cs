@@ -11,6 +11,8 @@ public class AudioManager : MonoBehaviour
     public List<AudioClip> audios = new List<AudioClip>();
     public static AudioManager instance;
 
+    private AudioSource audioSource;
+
     private void Awake()
     {
         DontDestroyOnLoad(this);
@@ -28,6 +30,7 @@ public class AudioManager : MonoBehaviour
     private void Start()
     {
         //MakeAudioSources();
+        audioSource = GetComponent<AudioSource>();
     }
 
     public void SetAudioManager(FileObj fileObj)
@@ -54,10 +57,21 @@ public class AudioManager : MonoBehaviour
 
     public void PlayAudioClip(int code)
     {
-        if (code < 0 || code >= audioSources.Count) return;
-        if (audioSources[code] == null) return;
+        // if (code < 0 || code >= audioSources.Count)
+        // {
+        //     Debug.LogError($"Clip code was out of range. {audioSources.Count} / {code}");
+        //     return;
+        // }
 
-        audioSources[code].Play();
+        // if (audioSources[code] == null)
+        // {
+        //     Debug.LogWarning($"Index {code} AudioClip is missing. No Key Sound.");
+        //     return;
+        // }
+
+        //audioSources[code].Play();
+
+        audioSource.PlayOneShot(audios[code]);
     }
 
     IEnumerator GetAudioClips(FileObj fileObj)

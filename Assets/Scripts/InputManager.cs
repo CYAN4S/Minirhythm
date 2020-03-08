@@ -14,7 +14,22 @@ public class InputManager : MonoBehaviour
 
     public KeyCode[] KeyCodes;
 
-    private void Start() 
+    public static InputManager instance;
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Debug.LogError("Singleton ERROR: InputManager");
+            Destroy(this);
+        }
+    }
+
+    private void Start()
     {
         sheetM = gameM.sheetM;
 
