@@ -40,7 +40,7 @@ public class FileManager : MonoBehaviour
         StartCoroutine(ExploreAsync());
     }
 
-    IEnumerator ExploreAsync()
+    private IEnumerator ExploreAsync()
     {
         SongsFolder = new DirectoryInfo(SongsDirString);
         if (!SongsFolder.Exists)
